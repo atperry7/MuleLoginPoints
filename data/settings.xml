@@ -1,0 +1,31 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <delays>
+            <key_between>1</key_between>
+            <key_press>0.1</key_press>
+            <wait_for_charselect>5</wait_for_charselect>
+            <wait_for_login>15</wait_for_login>
+            <wait_for_logout>5</wait_for_logout>
+            <wait_for_menu>5</wait_for_menu>
+        </delays>
+        <slots>
+            <1>1</1>
+            <2>2</2>
+            <3>3</3>
+            <4>4</4>
+            <5>5</5>
+            <6>6</6>
+            <7>7</7>
+            <8>8</8>
+            <9>9</9>
+            <10>10</10>
+            <11>11</11>
+            <12>12</12>
+            <13>13</13>
+            <14>14</14>
+            <15>15</15>
+            <16>16</16>
+        </slots>
+    </global>
+</settings>
