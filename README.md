@@ -52,6 +52,8 @@ To see which slots are currently configured:
 
 **IMPORTANT:** You must be at the character select screen before starting the addon.
 
+**IMPORTANT:** The default timings assume every character is in the Mog House for best results.
+
 If you're currently logged in:
 1. Type `/logout` to logout
 2. Navigate until you reach the character select screen
