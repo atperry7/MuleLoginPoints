@@ -2,10 +2,10 @@
 <settings>
     <global>
         <delays>
-            <key_between>1</key_between>
+            <key_between>0.5</key_between>
             <key_press>0.1</key_press>
             <wait_for_charselect>5</wait_for_charselect>
-            <wait_for_login>15</wait_for_login>
+            <wait_for_login>10</wait_for_login>
             <wait_for_logout>5</wait_for_logout>
             <wait_for_menu>5</wait_for_menu>
         </delays>

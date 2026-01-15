@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Mule Login Points'
-_addon.version = '1.0'
+_addon.version = '1.0.1'
 _addon.author = 'atperry7'
 _addon.commands = {'mulelogin', 'mls'}
 
@@ -49,8 +49,8 @@ local defaults = {
     slots = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16},  -- Slots to login in order
     delays = {
         key_press = 0.1,  -- Duration to hold key down
-        key_between = 1.0,  -- Wait between key presses - increased for reliability
-        wait_for_login = 15,
+        key_between = 0.5,  -- Wait between key presses - increased for reliability
+        wait_for_login = 10,
         wait_for_logout = 5,
         wait_for_menu = 5,
         wait_for_charselect = 5,
@@ -155,7 +155,7 @@ local function handle_main_menu()
         state.running = false
         log('Mule login cycle complete! At character select - pick your character.')
         log('Unloading addon...')
-        windower.send_command('lua u mule-login-point-switcher')
+        windower.send_command('lua u muleloginpoints')
         return
     end
 
@@ -264,7 +264,7 @@ local function log_character_login(char_name, slot)
     if file then
         file:write(string.format('[%s] Slot %d: %s\n', timestamp, slot, char_name))
         file:close()
-        log('Logged character "' .. char_name .. '" to: ' .. log_file)
+        log('Logged character "' .. char_name .. '" to: ' .. date .. '_login_log.txt')
     else
         error('Failed to write to log file: ' .. log_file)
     end
