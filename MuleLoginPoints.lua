@@ -25,7 +25,7 @@
 --SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 _addon.name = 'Mule Login Points'
-_addon.version = '1.0.1'
+_addon.version = '1.1.0'
 _addon.author = 'atperry7'
 _addon.commands = {'mulelogin', 'mls'}
 
@@ -54,7 +54,8 @@ local defaults = {
         wait_for_logout = 5,
         wait_for_menu = 5,
         wait_for_charselect = 5,
-    }
+    },
+    config_logout_destination_select_character = false
 }
 
 local settings = config.load(defaults)
@@ -105,20 +106,25 @@ local function navigate_to_slot(target_slot)
     state.current = STATE.NAVIGATING
     state.target_slot = target_slot
 
-    -- Cursor always resets to slot 1 when returning to character select
-    local steps = get_navigation_steps(1, target_slot)
+    -- Calculate navigation from current cursor position
+    local steps = get_navigation_steps(state.current_slot, target_slot)
 
-    log('Navigating from slot 1 to slot ' .. target_slot .. ' (' .. #steps .. ' key presses)')
+    if #steps > 0 then
+        log('Navigating from slot ' .. state.current_slot .. ' to slot ' .. target_slot .. ' (' .. #steps .. ' key presses)')
 
-    -- Extra safety delay before starting navigation
-    coroutine.sleep(1)
+        -- Extra safety delay before starting navigation
+        coroutine.sleep(1)
 
-    for i, direction in ipairs(steps) do
-        log('  Step ' .. i .. '/' .. #steps .. ': pressing ' .. direction)
-        press_key(direction)
+        for i, direction in ipairs(steps) do
+            log('  Step ' .. i .. '/' .. #steps .. ': pressing ' .. direction)
+            press_key(direction)
+        end
+
+        log('Navigation complete - should be at slot ' .. target_slot)
+    else
+        log('Already at slot ' .. target_slot .. ' - no navigation needed')
     end
 
-    log('Navigation complete - should be at slot ' .. target_slot)
     state.current_slot = target_slot
 end
 
@@ -133,21 +139,23 @@ local function login_character()
     press_key('enter')  -- Confirm the selection
 end
 
--- Forward declaration for process_next_slot
+-- Forward declarations
 local process_next_slot
+local handle_character_select
 
--- Handle main menu after logout
-local function handle_main_menu()
-    state.current = STATE.AT_MAIN_MENU
-
-    log('At main menu, pressing Enter to continue...')
-    coroutine.sleep(settings.delays.wait_for_menu)
-
-    -- Press Enter Key once since we are past the Accept Terms
-    press_key('enter')
-
-    coroutine.sleep(settings.delays.wait_for_charselect)
+-- Handle being at character select screen
+-- Note: When using direct-to-char-select, cursor stays at current slot (more efficient)
+-- When coming from main menu, cursor resets to slot 1
+handle_character_select = function(cursor_was_reset)
     state.current = STATE.AT_CHAR_SELECT
+
+    log('At character select screen')
+    coroutine.sleep(settings.delays.wait_for_charselect)
+
+    -- If cursor was reset (came from main menu), update our tracking
+    if cursor_was_reset then
+        state.current_slot = 1
+    end
 
     -- Check if we've completed all characters
     if state.mule_index >= #state.slot_queue then
@@ -163,6 +171,20 @@ local function handle_main_menu()
     process_next_slot()
 end
 
+-- Handle main menu after logout
+local function handle_main_menu()
+    state.current = STATE.AT_MAIN_MENU
+
+    log('At main menu, pressing Enter to continue...')
+    coroutine.sleep(settings.delays.wait_for_menu)
+
+    -- Press Enter Key once since we are past the Accept Terms
+    press_key('enter')
+
+    -- Now at character select screen (cursor will reset to slot 1)
+    handle_character_select(true)
+end
+
 -- Logout current character
 local function logout_character()
     state.current = STATE.LOGGING_OUT
@@ -171,7 +193,19 @@ local function logout_character()
     windower.send_command('input /logout')
 
     coroutine.sleep(settings.delays.wait_for_logout)
-    handle_main_menu()
+
+    -- Check if we're configured to go directly to character select
+    -- Note: Direct-to-char-select keeps cursor at current slot (more efficient navigation)
+    --       Main menu path resets cursor to slot 1 (requires full navigation each time)
+    if settings.config_logout_destination_select_character then
+        log('Logout destination: Character select (skipping main menu)')
+        -- Cursor stays at state.current_slot, no reset
+        handle_character_select(false)
+    else
+        log('Logout destination: Main menu')
+        -- Cursor will reset to slot 1
+        handle_main_menu()
+    end
 end
 
 -- Process the next slot in queue

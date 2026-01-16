@@ -50,13 +50,32 @@ To see which slots are currently configured:
 
 ### Step 2: Start at Character Select
 
-**IMPORTANT:** You must be at the character select screen before starting the addon.
-
-**IMPORTANT:** The default timings assume every character is in the Mog House for best results.
+- **IMPORTANT:** You must be at the character select screen before starting the addon.
+- **IMPORTANT:** *Default Timings* assume every character is in the Mog House for best results.
+- **IMPORTANT:** *Default Settings* assume you are not using the Logout Desination -> Select Character
 
 If you're currently logged in:
 1. Type `/logout` to logout
 2. Navigate until you reach the character select screen
+
+#### FFXI Config Option: Logout Destination -> Select Character
+
+This is not enabled by default when you install FFXI.
+
+By default, when a character logs out, the game shows the main menu before returning to character select. If you have the "Logout Destination -> Select Character" option enabled in your "Main Menu" FFXI Config, you can enable this setting for faster cycling:
+
+To enable in the addon, edit your settings file and set:
+
+```xml
+<config_logout_destination_select_character>true</config_logout_destination_select_character>
+```
+
+**Benefits:**
+- Skips the main menu navigation (saves time)
+- More efficient slot navigation (cursor stays at current slot instead of resetting to slot 1)
+- Fewer key presses overall
+
+**Note:** Only enable this if you have the corresponding option enabled in your FFXI settings, otherwise the addon may get stuck.
 
 ### Step 3: Start the Cycle
 

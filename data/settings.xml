@@ -27,5 +27,6 @@
             <15>15</15>
             <16>16</16>
         </slots>
+        <config_logout_destination_select_character>false</config_logout_destination_select_character>
     </global>
 </settings>
