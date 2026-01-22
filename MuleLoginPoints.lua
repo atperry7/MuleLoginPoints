@@ -242,8 +242,10 @@ local function start_cycle()
         return
     end
 
-    if windower.ffxi.get_info().logged_in then
+    local info = windower.ffxi.get_info()
+    if info and info.logged_in then
         error('Already logged in! Please logout first and start from character select.')
+        print('MLS Error: Already logged in! Please logout first and start from character select.')
         return
     end
 
@@ -357,12 +359,22 @@ windower.register_event('addon command', function(command, ...)
         stop_cycle()
 
     elseif command == 'status' then
+        local dest = settings.config_logout_destination_select_character and 'Character Select' or 'Main Menu'
         log('State: ' .. state.current)
         log('Running: ' .. tostring(state.running))
         if state.running then
             log('Progress: ' .. state.mule_index .. '/' .. #state.slot_queue)
         end
         log('Configured slots: ' .. table.concat(settings.slots, ', '))
+        log('Logout destination: ' .. dest)
+        -- Also print to console (works at character select)
+        print('MLS State: ' .. state.current)
+        print('MLS Running: ' .. tostring(state.running))
+        if state.running then
+            print('MLS Progress: ' .. state.mule_index .. '/' .. #state.slot_queue)
+        end
+        print('MLS Configured slots: ' .. table.concat(settings.slots, ', '))
+        print('MLS Logout destination: ' .. dest)
 
     elseif command == 'slots' then
         if #args > 0 then
@@ -373,6 +385,7 @@ windower.register_event('addon command', function(command, ...)
                     table.insert(new_slots, num)
                 else
                     error('Invalid slot: ' .. arg .. ' (must be 1-16)')
+                    print('MLS Error: Invalid slot: ' .. arg .. ' (must be 1-16)')
                     return
                 end
             end
@@ -381,10 +394,14 @@ windower.register_event('addon command', function(command, ...)
                 settings:save()
                 log('Slots updated: ' .. table.concat(new_slots, ', '))
                 log('Will login ' .. #new_slots .. ' character(s) in order')
+                print('MLS Slots updated: ' .. table.concat(new_slots, ', '))
+                print('MLS Will login ' .. #new_slots .. ' character(s) in order')
             end
         else
             log('Current slots: ' .. table.concat(settings.slots, ', '))
             log('Will login ' .. #settings.slots .. ' character(s) in order')
+            print('MLS Current slots: ' .. table.concat(settings.slots, ', '))
+            print('MLS Will login ' .. #settings.slots .. ' character(s) in order')
         end
 
     elseif command == 'delay' then
@@ -405,6 +422,31 @@ windower.register_event('addon command', function(command, ...)
             end
         end
 
+    elseif command == 'logoutdest' then
+        if args[1] then
+            local dest = args[1]:lower()
+            if dest == 'charselect' or dest == 'char' then
+                settings.config_logout_destination_select_character = true
+                settings:save()
+                log('Logout destination set to: Character Select (direct)')
+                print('MLS Logout destination set to: Character Select (direct)')
+            elseif dest == 'mainmenu' or dest == 'menu' then
+                settings.config_logout_destination_select_character = false
+                settings:save()
+                log('Logout destination set to: Main Menu')
+                print('MLS Logout destination set to: Main Menu')
+            else
+                error('Invalid option. Use: charselect or mainmenu')
+                print('MLS Error: Invalid option. Use: charselect or mainmenu')
+            end
+        else
+            local current = settings.config_logout_destination_select_character and 'Character Select' or 'Main Menu'
+            log('Current logout destination: ' .. current)
+            log('Usage: //mls logoutdest charselect  OR  //mls logoutdest mainmenu')
+            print('MLS Current logout destination: ' .. current)
+            print('MLS Usage: //mls logoutdest charselect  OR  //mls logoutdest mainmenu')
+        end
+
     else -- help
         log('Mule Login Point Switcher v' .. _addon.version)
         log('Commands:')
@@ -413,10 +455,24 @@ windower.register_event('addon command', function(command, ...)
         log('  //mls status          - Show current state')
         log('  //mls slots           - View configured slots')
         log('  //mls slots 2 3 5 16  - Set slots to login in order')
+        log('  //mls logoutdest      - View/set logout destination (charselect or mainmenu)')
         log('  //mls delay           - View timing delays')
         log('  //mls delay <key> <s> - Set a delay value')
         log('  //mls help            - Show this help')
+        -- Also print to console (works at character select)
+        print('Mule Login Point Switcher v' .. _addon.version)
+        print('Commands:')
+        print('  //mls start           - Start the mule login cycle')
+        print('  //mls stop            - Abort the current cycle')
+        print('  //mls status          - Show current state')
+        print('  //mls slots           - View configured slots')
+        print('  //mls slots 2 3 5 16  - Set slots to login in order')
+        print('  //mls logoutdest      - View/set logout destination (charselect or mainmenu)')
+        print('  //mls delay           - View timing delays')
+        print('  //mls delay <key> <s> - Set a delay value')
+        print('  //mls help            - Show this help')
     end
 end)
 
 log('Mule Login Point Switcher loaded. Type //mls help for commands.')
+print('Mule Login Point Switcher loaded. Type //mls help for commands.')

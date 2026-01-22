@@ -64,7 +64,12 @@ This is not enabled by default when you install FFXI.
 
 By default, when a character logs out, the game shows the main menu before returning to character select. If you have the "Logout Destination -> Select Character" option enabled in your "Main Menu" FFXI Config, you can enable this setting for faster cycling:
 
-To enable in the addon, edit your settings file and set:
+To enable in the addon, use the command:
+```
+//mls logoutdest charselect
+```
+
+Or edit your settings file and set:
 
 ```xml
 <config_logout_destination_select_character>true</config_logout_destination_select_character>
@@ -116,6 +121,7 @@ The addon will automatically unload itself when done.
 | `//mls status` | Shows what the addon is currently doing |
 | `//mls slots` | Shows which character slots are configured |
 | `//mls slots 2 3 4 5` | Sets which character slots to login (in order) |
+| `//mls logoutdest` | View/set logout destination (charselect or mainmenu) |
 | `//mls delay` | Shows timing settings (advanced) |
 | `//mls help` | Shows the list of commands |
 
@@ -182,4 +188,4 @@ Settings are saved automatically in:
 Windower4/addons/MuleLoginPoints/data/settings.xml
 ```
 
-You can edit this file directly if needed, but it's easier to use the `//mls slots` and `//mls delay` commands.
+You can edit this file directly if needed, but it's easier to use the `//mls slots`, `//mls delay`, and `//mls logoutdest` commands.
